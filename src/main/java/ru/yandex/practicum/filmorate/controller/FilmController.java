@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.controller.exception.DurationException;
-import ru.yandex.practicum.filmorate.controller.exception.MaxLengthException;
-import ru.yandex.practicum.filmorate.controller.exception.RealiseDateException;
+import ru.yandex.practicum.filmorate.controller.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -17,7 +15,7 @@ import static ru.yandex.practicum.filmorate.controller.Stubs.MIN_TIME_ADDING_FIL
 @RequestMapping("/films")
 public class FilmController implements IdGenerator {
 
-    HashMap<Long, Film> films = new HashMap<>();
+    HashMap<Integer, Film> films = new HashMap<>();
 
     @GetMapping
     Collection<Film> getAll() {
@@ -30,17 +28,17 @@ public class FilmController implements IdGenerator {
             throw new ConditionsNotMetException("Film title cannot be empty");
         }
 
-        if (film.getDescription().length() <= MAX_LENGTH_FILM_DESCRIPTION) {
+        if (film.getDescription().length() > MAX_LENGTH_FILM_DESCRIPTION) {
             throw new MaxLengthException("Max length of film description must no more " +
-                    MAX_LENGTH_FILM_DESCRIPTION + "symbols");
+                    MAX_LENGTH_FILM_DESCRIPTION + " symbols");
         }
 
-        if (film.getRealiseDate().isBefore(MIN_TIME_ADDING_FILM)) {
+        if (film.getReleaseDate().isBefore(MIN_TIME_ADDING_FILM)) {
             throw new RealiseDateException("Min realise date isn't before " +
                     MIN_TIME_ADDING_FILM);
         }
 
-        if (film.getDuration().isNegative()) {
+        if (film.getDuration() < 0) {
             throw new DurationException("Duration must be positive");
         }
 
@@ -63,23 +61,23 @@ public class FilmController implements IdGenerator {
                 throw new ConditionsNotMetException("Film title cannot be empty");
             }
 
-            if (newFilm.getDescription().length() <= MAX_LENGTH_FILM_DESCRIPTION) {
+            if (newFilm.getDescription().length() > MAX_LENGTH_FILM_DESCRIPTION) {
                 throw new MaxLengthException("Max length of newFilm description must no more " +
                         MAX_LENGTH_FILM_DESCRIPTION + "symbols");
             }
 
-            if (newFilm.getRealiseDate().isBefore(MIN_TIME_ADDING_FILM)) {
+            if (newFilm.getReleaseDate().isBefore(MIN_TIME_ADDING_FILM)) {
                 throw new RealiseDateException("Min realise date isn't before " +
                         MIN_TIME_ADDING_FILM);
             }
 
-            if (newFilm.getDuration().isNegative()) {
+            if (newFilm.getDuration() < 0) {
                 throw new DurationException("Duration must be positive");
             }
 
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
-            oldFilm.setRealiseDate(newFilm.getRealiseDate());
+            oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
             return oldFilm;
         }
@@ -88,12 +86,11 @@ public class FilmController implements IdGenerator {
 
     }
 
-
     @Override
-    public long getNewId() {
-        long currentMaxId = films.keySet()
+    public Integer getNewId() {
+        int currentMaxId = films.keySet()
                 .stream()
-                .mapToLong(id -> id)
+                .mapToInt(id -> id)
                 .max()
                 .orElse(0);
         return ++currentMaxId;
