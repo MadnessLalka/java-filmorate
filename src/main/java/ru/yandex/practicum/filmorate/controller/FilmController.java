@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -14,6 +15,7 @@ import static ru.yandex.practicum.filmorate.controller.Stubs.MIN_TIME_ADDING_FIL
 @RestController
 @RequestMapping("/films")
 public class FilmController implements IdGenerator {
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
 
     HashMap<Integer, Film> films = new HashMap<>();
 
@@ -25,32 +27,39 @@ public class FilmController implements IdGenerator {
     @PostMapping
     public Film create(@RequestBody Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
+            log.error("Film title cannot be empty");
             throw new ConditionsNotMetException("Film title cannot be empty");
         }
 
         if (film.getDescription().length() > MAX_LENGTH_FILM_DESCRIPTION) {
+            log.error("Max length of film description must no more " +
+                    MAX_LENGTH_FILM_DESCRIPTION + " symbols");
             throw new MaxLengthException("Max length of film description must no more " +
                     MAX_LENGTH_FILM_DESCRIPTION + " symbols");
         }
 
         if (film.getReleaseDate().isBefore(MIN_TIME_ADDING_FILM)) {
+            log.error("Min realise date isn't before {}", MIN_TIME_ADDING_FILM);
             throw new RealiseDateException("Min realise date isn't before " +
                     MIN_TIME_ADDING_FILM);
         }
 
         if (film.getDuration() < 0) {
+            log.error("Duration must be positive");
             throw new DurationException("Duration must be positive");
         }
 
         film.setId(getNewId());
         films.put(film.getId(), film);
 
+        log.info("Film create {}", film);
         return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film newFilm) {
         if (newFilm.getId() == null) {
+            log.error("Id must not be empty");
             throw new ConditionsNotMetException("Id must not be empty");
         }
 
@@ -58,30 +67,37 @@ public class FilmController implements IdGenerator {
             Film oldFilm = films.get(newFilm.getId());
 
             if (newFilm.getName() == null || newFilm.getName().isBlank()) {
-                throw new ConditionsNotMetException("Film title cannot be empty");
+                log.error("Film title cannot be empty to update");
+                throw new ConditionsNotMetException("Film title cannot be empty to update");
             }
 
             if (newFilm.getDescription().length() > MAX_LENGTH_FILM_DESCRIPTION) {
+                log.error("Max length of newFilm description must no more " +
+                        MAX_LENGTH_FILM_DESCRIPTION + "symbols");
                 throw new MaxLengthException("Max length of newFilm description must no more " +
                         MAX_LENGTH_FILM_DESCRIPTION + "symbols");
             }
 
             if (newFilm.getReleaseDate().isBefore(MIN_TIME_ADDING_FILM)) {
+                log.error("Min realise date isn't before {} to update", MIN_TIME_ADDING_FILM);
                 throw new RealiseDateException("Min realise date isn't before " +
-                        MIN_TIME_ADDING_FILM);
+                        MIN_TIME_ADDING_FILM + " to update");
             }
 
             if (newFilm.getDuration() < 0) {
-                throw new DurationException("Duration must be positive");
+                log.error("Duration must be positive to update");
+                throw new DurationException("Duration must be positive to update");
             }
 
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
+            log.info("Film update {}", oldFilm);
             return oldFilm;
         }
 
+        log.error("Film with id = {} not found", newFilm.getId());
         throw new NotFoundException("Film with id = " + newFilm.getId() + " not found");
 
     }
