@@ -16,7 +16,7 @@ public class FilmControllerTest {
     public static FilmController filmController = new FilmController();
 
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         filmController = new FilmController();
     }
 
@@ -100,7 +100,7 @@ public class FilmControllerTest {
         film.setDuration(100);
 
         filmController.create(film);
-        assertEquals(1, filmController.getAll().size() );
+        assertEquals(1, filmController.getAll().size());
         Film newFilm = new Film();
         newFilm.setId(null);
         newFilm.setName("test name");
@@ -124,7 +124,7 @@ public class FilmControllerTest {
         film.setDuration(100);
 
         filmController.create(film);
-        assertEquals(1, filmController.getAll().size() );
+        assertEquals(1, filmController.getAll().size());
         Film newFilm = new Film();
         newFilm.setId(6498494);
         newFilm.setName("test name");
@@ -148,7 +148,7 @@ public class FilmControllerTest {
         film.setDuration(100);
 
         filmController.create(film);
-        assertEquals(1, filmController.getAll().size() );
+        assertEquals(1, filmController.getAll().size());
         Film newFilm = new Film();
         newFilm.setId(1);
         newFilm.setName("test name");
@@ -172,7 +172,7 @@ public class FilmControllerTest {
         film.setDuration(100);
 
         filmController.create(film);
-        assertEquals(1, filmController.getAll().size() );
+        assertEquals(1, filmController.getAll().size());
         Film newFilm = new Film();
         newFilm.setId(1);
         newFilm.setName("test name");
@@ -196,7 +196,7 @@ public class FilmControllerTest {
         film.setDuration(100);
 
         filmController.create(film);
-        assertEquals(1, filmController.getAll().size() );
+        assertEquals(1, filmController.getAll().size());
         Film newFilm = new Film();
         newFilm.setId(1);
         newFilm.setName("test name");
@@ -208,8 +208,6 @@ public class FilmControllerTest {
             filmController.update(newFilm);
         }, "Поле duration должно быть положительным");
     }
-
-
 
 
 }

@@ -16,7 +16,7 @@ public class UsersControllerTest {
     public static UserController userController = new UserController();
 
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         userController = new UserController();
     }
 
@@ -28,7 +28,7 @@ public class UsersControllerTest {
         user.setEmail("");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,12,8));
+        user.setBirthday(LocalDate.of(1999, 12, 8));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.create(user);
@@ -45,7 +45,7 @@ public class UsersControllerTest {
         user.setEmail("test");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,12,8));
+        user.setBirthday(LocalDate.of(1999, 12, 8));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.create(user);
@@ -62,7 +62,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,12,8));
+        user.setBirthday(LocalDate.of(1999, 12, 8));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.create(user);
@@ -79,7 +79,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(2077,10,23));
+        user.setBirthday(LocalDate.of(2077, 10, 23));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.create(user);
@@ -96,7 +96,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,8,12));
+        user.setBirthday(LocalDate.of(1999, 8, 12));
 
         userController.create(user);
         assertEquals(1, userController.getAll().size());
@@ -106,7 +106,7 @@ public class UsersControllerTest {
         newUser.setEmail("test@test.ru");
         newUser.setLogin("login");
         newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(1999,8,12));
+        newUser.setBirthday(LocalDate.of(1999, 8, 12));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.update(newUser);
@@ -121,7 +121,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,8,12));
+        user.setBirthday(LocalDate.of(1999, 8, 12));
 
         userController.create(user);
         assertEquals(1, userController.getAll().size());
@@ -131,7 +131,7 @@ public class UsersControllerTest {
         newUser.setEmail("test@test.ru");
         newUser.setLogin("login");
         newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(1999,8,12));
+        newUser.setBirthday(LocalDate.of(1999, 8, 12));
 
         assertThrows(NotFoundException.class, () -> {
             userController.update(newUser);
@@ -146,7 +146,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,8,12));
+        user.setBirthday(LocalDate.of(1999, 8, 12));
 
         userController.create(user);
         assertEquals(1, userController.getAll().size());
@@ -156,7 +156,7 @@ public class UsersControllerTest {
         newUser.setEmail("");
         newUser.setLogin("login");
         newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(1999,8,12));
+        newUser.setBirthday(LocalDate.of(1999, 8, 12));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.update(newUser);
@@ -171,7 +171,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,8,12));
+        user.setBirthday(LocalDate.of(1999, 8, 12));
 
         userController.create(user);
         assertEquals(1, userController.getAll().size());
@@ -181,7 +181,7 @@ public class UsersControllerTest {
         newUser.setEmail("incorrect email");
         newUser.setLogin("login");
         newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(1999,8,12));
+        newUser.setBirthday(LocalDate.of(1999, 8, 12));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.update(newUser);
@@ -196,7 +196,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,8,12));
+        user.setBirthday(LocalDate.of(1999, 8, 12));
 
         userController.create(user);
         assertEquals(1, userController.getAll().size());
@@ -206,7 +206,7 @@ public class UsersControllerTest {
         newUser.setEmail("test@test.ru");
         newUser.setLogin("");
         newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(1999,8,12));
+        newUser.setBirthday(LocalDate.of(1999, 8, 12));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.update(newUser);
@@ -221,7 +221,7 @@ public class UsersControllerTest {
         user.setEmail("test@test.ru");
         user.setLogin("login");
         user.setName("name");
-        user.setBirthday(LocalDate.of(1999,8,12));
+        user.setBirthday(LocalDate.of(1999, 8, 12));
 
         userController.create(user);
         assertEquals(1, userController.getAll().size());
@@ -231,14 +231,12 @@ public class UsersControllerTest {
         newUser.setEmail("test@test.ru");
         newUser.setLogin("");
         newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(2077,10,23));
+        newUser.setBirthday(LocalDate.of(2077, 10, 23));
 
         assertThrows(ConditionsNotMetException.class, () -> {
             userController.update(newUser);
         }, "Поле birthday не должно отсылать в будущие");
     }
-
-
 
 
 }
