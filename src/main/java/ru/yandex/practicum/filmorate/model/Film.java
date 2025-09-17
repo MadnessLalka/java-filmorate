@@ -7,9 +7,6 @@ import java.time.LocalDate;
 
 import static ru.yandex.practicum.filmorate.controller.Stubs.MAX_LENGTH_FILM_DESCRIPTION;
 
-/**
- * Film.
- */
 @Data
 public class Film {
     private Integer id;

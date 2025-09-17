@@ -27,6 +27,16 @@ public class UserController implements IdGenerator {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
 
+        if ((user.getEmail() == null || user.getEmail().isBlank())) {
+            log.error("User email cannot be empty");
+            throw new ConditionsNotMetException("User email cannot be empty");
+        }
+
+        if (!user.getEmail().contains("@")) {
+            log.error("Email must be symbol @");
+            throw new ConditionsNotMetException("Email must be symbol @");
+        }
+
         if ((user.getLogin() == null || user.getLogin().isBlank())) {
             log.error("Login cannot be empty");
             throw new ConditionsNotMetException("Login cannot be empty");
@@ -58,6 +68,21 @@ public class UserController implements IdGenerator {
 
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
+
+            if ((newUser.getEmail() == null || newUser.getEmail().isBlank())) {
+                log.error("User email cannot be empty to update");
+                throw new ConditionsNotMetException("User email cannot be empty to update");
+            }
+
+            if (!newUser.getEmail().contains("@")) {
+                log.error("Email must be symbol @ to update");
+                throw new ConditionsNotMetException("Email must be symbol @");
+            }
+
+            if ((newUser.getLogin() == null || newUser.getLogin().isBlank())) {
+                log.error("Login cannot be empty to update");
+                throw new ConditionsNotMetException("Login cannot be empty to update");
+            }
 
             if (newUser.getName() == null || newUser.getName().isBlank()) {
                 log.info("Name is empty change to login to update {}", newUser.getLogin());

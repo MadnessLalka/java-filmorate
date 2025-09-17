@@ -12,7 +12,7 @@ public class User {
     private Integer id;
     @NotNull
     @NotBlank
-    @Email
+    @Email(message = "incorrect email address")
     private String email;
     @NotNull
     @NotBlank
