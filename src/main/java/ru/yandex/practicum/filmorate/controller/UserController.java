@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -24,16 +25,7 @@ public class UserController implements IdGenerator {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        if ((user.getEmail() == null || user.getEmail().isBlank())) {
-            log.error("User email cannot be empty");
-            throw new ConditionsNotMetException("User email cannot be empty");
-        }
-
-        if (!user.getEmail().contains("@")) {
-            log.error("Email must be symbol @");
-            throw new ConditionsNotMetException("Email must be symbol @");
-        }
+    public User create(@Valid @RequestBody User user) {
 
         if ((user.getLogin() == null || user.getLogin().isBlank())) {
             log.error("Login cannot be empty");
@@ -58,7 +50,7 @@ public class UserController implements IdGenerator {
     }
 
     @PutMapping
-    public User update(@RequestBody User newUser) {
+    public User update(@Valid @RequestBody User newUser) {
         if (newUser.getId() == null) {
             log.error("Id must not be empty");
             throw new ConditionsNotMetException("Id must not be empty");
@@ -66,20 +58,6 @@ public class UserController implements IdGenerator {
 
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
-            if ((newUser.getEmail() == null || newUser.getEmail().isBlank())) {
-                log.error("User email cannot be empty to update");
-                throw new ConditionsNotMetException("User email cannot be empty to update");
-            }
-
-            if (!newUser.getEmail().contains("@")) {
-                log.error("Email must be symbol @ to update");
-                throw new ConditionsNotMetException("Email must be symbol @");
-            }
-
-            if ((newUser.getLogin() == null || newUser.getLogin().isBlank())) {
-                log.error("Login cannot be empty to update");
-                throw new ConditionsNotMetException("Login cannot be empty to update");
-            }
 
             if (newUser.getName() == null || newUser.getName().isBlank()) {
                 log.info("Name is empty change to login to update {}", newUser.getLogin());
