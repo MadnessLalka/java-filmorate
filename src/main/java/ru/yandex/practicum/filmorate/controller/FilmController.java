@@ -52,7 +52,6 @@ public class FilmController implements IdGenerator {
             throw new ConditionsNotMetException("Duration must be positive");
         }
 
-
         film.setId(getNewId());
         films.put(film.getId(), film);
 
@@ -97,13 +96,13 @@ public class FilmController implements IdGenerator {
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
+
             log.info("Film update {}", oldFilm);
             return oldFilm;
         }
 
         log.error("Film with id = {} not found", newFilm.getId());
         throw new NotFoundException("Film with id = " + newFilm.getId() + " not found");
-
     }
 
     @Override

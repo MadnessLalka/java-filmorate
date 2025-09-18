@@ -17,6 +17,7 @@ import java.util.HashMap;
 @RequestMapping("/users")
 public class UserController implements IdGenerator {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
     HashMap<Integer, User> users = new HashMap<>();
 
     @GetMapping
@@ -105,7 +106,6 @@ public class UserController implements IdGenerator {
         }
         log.error("User with id = {} not found", newUser.getId());
         throw new NotFoundException("User with id = " + newUser.getId() + " not found");
-
     }
 
     @Override
