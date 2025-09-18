@@ -4,15 +4,15 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.controller.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
 
-import static ru.yandex.practicum.filmorate.controller.Stubs.MAX_LENGTH_FILM_DESCRIPTION;
-import static ru.yandex.practicum.filmorate.controller.Stubs.MIN_TIME_ADDING_FILM;
+import static ru.yandex.practicum.filmorate.controller.utils.Constants.MAX_LENGTH_FILM_DESCRIPTION;
+import static ru.yandex.practicum.filmorate.controller.utils.Constants.MIN_TIME_ADDING_FILM;
 
 @RestController
 @RequestMapping("/films")

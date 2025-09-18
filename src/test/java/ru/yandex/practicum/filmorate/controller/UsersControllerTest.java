@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.controller.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;

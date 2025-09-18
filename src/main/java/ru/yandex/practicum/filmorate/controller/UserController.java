@@ -5,8 +5,8 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.controller.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -103,8 +103,8 @@ public class UserController implements IdGenerator {
             return oldUser;
 
         }
-        log.error("Film with id = {} not found", newUser.getId());
-        throw new NotFoundException("Film with id = " + newUser.getId() + " not found");
+        log.error("User with id = {} not found", newUser.getId());
+        throw new NotFoundException("User with id = " + newUser.getId() + " not found");
 
     }
 
