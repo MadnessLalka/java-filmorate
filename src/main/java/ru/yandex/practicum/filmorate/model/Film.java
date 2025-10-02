@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.controller.utils.Constants.MAX_LENGTH_FILM_DESCRIPTION;
 
@@ -24,4 +25,6 @@ public class Film {
 
     @Positive(message = "Duration must be positive")
     private int duration;
+
+    private Set<Integer> userLikes;
 }
