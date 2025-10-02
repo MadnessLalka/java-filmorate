@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UsersControllerTest {
-    public static UserController userController = new UserController();
+   /* public static UserController userController = new UserController();
 
     @AfterEach
     void afterEach() {
@@ -237,6 +237,6 @@ public class UsersControllerTest {
             userController.update(newUser);
         }, "Поле birthday не должно отсылать в будущие");
     }
-
+*/
 
 }

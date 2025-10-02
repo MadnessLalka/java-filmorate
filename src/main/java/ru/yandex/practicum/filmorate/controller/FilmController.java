@@ -24,6 +24,7 @@ public class FilmController implements IdGenerator {
     @GetMapping
     Collection<Film> getAll() {
 //        return films.values();
+        return null;
     }
 
     @PostMapping
@@ -57,6 +58,7 @@ public class FilmController implements IdGenerator {
 //
 //        log.info("Film create {}", film);
 //        return film;
+        return null;
     }
 
     @PutMapping
@@ -103,6 +105,7 @@ public class FilmController implements IdGenerator {
 //
 //        log.error("Film with id = {} not found", newFilm.getId());
 //        throw new NotFoundException("Film with id = " + newFilm.getId() + " not found");
+        return null;
     }
 
     @Override
@@ -113,5 +116,6 @@ public class FilmController implements IdGenerator {
 //                .max()
 //                .orElse(0);
 //        return ++currentMaxId;
+        return null;
     }
 }

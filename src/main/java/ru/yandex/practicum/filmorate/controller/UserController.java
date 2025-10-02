@@ -4,30 +4,36 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/users")
 public class UserController implements IdGenerator {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-//    HashMap<Integer, User> users = new HashMap<>();
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    //    HashMap<Integer, User> users = new HashMap<>();
 
     @GetMapping
     Collection<User> getAll() {
 //        return users.values();
+        return userService.getAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-
+        return userService.create(user);
 //        if ((user.getEmail() == null || user.getEmail().isBlank())) {
 //            log.error("User email cannot be empty");
 //            throw new ConditionsNotMetException("User email cannot be empty");
@@ -62,6 +68,7 @@ public class UserController implements IdGenerator {
 
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
+       return userService.update(newUser);
 //        if (newUser.getId() == null) {
 //            log.error("Id must not be empty");
 //            throw new ConditionsNotMetException("Id must not be empty");
@@ -106,6 +113,7 @@ public class UserController implements IdGenerator {
 //        }
 //        log.error("User with id = {} not found", newUser.getId());
 //        throw new NotFoundException("User with id = " + newUser.getId() + " not found");
+//        return null;
     }
 
     @Override
@@ -116,5 +124,6 @@ public class UserController implements IdGenerator {
 //                .max()
 //                .orElse(0);
 //        return ++currentMaxId;
+        return userService.getNewId();
     }
 }
