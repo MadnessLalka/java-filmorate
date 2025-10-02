@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DuplicateDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 
 @Service
 public class FilmService implements FilmStorage {
@@ -67,6 +69,19 @@ public class FilmService implements FilmStorage {
 
         log.warn("User {} wasn't found to liked film {}", user.getEmail(), film.getName());
         throw new NotFoundException("User " + user.getEmail() + " wasn't found to liked film " + film.getName());
+    }
+
+    public Collection<Film> getTopPopularFilms(@Value("${filmorate.film.top.size}") int filmTopSize) {
+        if (inMemoryFilmStorage.getAll().isEmpty()) {
+            log.warn("Film list is empty");
+            throw new NotFoundException("Film list is empty");
+        }
+
+        log.trace("Getting list by top {} films by liked", filmTopSize);
+        return inMemoryFilmStorage.getAll().stream()
+                .sorted(Comparator.comparing(film -> film.getUserLikes().size(), Comparator.reverseOrder()))
+                .limit(filmTopSize)
+                .toList();
     }
 
 
