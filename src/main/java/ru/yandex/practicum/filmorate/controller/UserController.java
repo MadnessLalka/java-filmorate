@@ -13,7 +13,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
-public class UserController implements IdGenerator {
+public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
@@ -116,14 +116,4 @@ public class UserController implements IdGenerator {
 //        return null;
     }
 
-    @Override
-    public Integer getNewId() {
-//        int currentMaxId = users.keySet()
-//                .stream()
-//                .mapToInt(id -> id)
-//                .max()
-//                .orElse(0);
-//        return ++currentMaxId;
-        return userService.getNewId();
-    }
 }

@@ -15,5 +15,4 @@ public interface UserStorage {
 
     User remove(@Valid @RequestBody User user);
 
-    Integer getNewId();
 }

@@ -119,7 +119,6 @@ public class InMemoryUserStorage implements UserStorage{
         throw new NotFoundException("User with id = " + user.getId() + " not found");
     }
 
-    @Override
     public Integer getNewId() {
         int currentMaxId = users.keySet()
                 .stream()

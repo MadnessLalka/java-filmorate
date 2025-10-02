@@ -16,7 +16,7 @@ import static ru.yandex.practicum.filmorate.controller.utils.Constants.MIN_TIME_
 
 @RestController
 @RequestMapping("/films")
-public class FilmController implements IdGenerator {
+public class FilmController  {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
 
 //    HashMap<Integer, Film> films = new HashMap<>();
@@ -108,14 +108,4 @@ public class FilmController implements IdGenerator {
         return null;
     }
 
-    @Override
-    public Integer getNewId() {
-//        int currentMaxId = films.keySet()
-//                .stream()
-//                .mapToInt(id -> id)
-//                .max()
-//                .orElse(0);
-//        return ++currentMaxId;
-        return null;
-    }
 }
