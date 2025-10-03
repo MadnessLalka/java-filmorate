@@ -10,15 +10,22 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserStorage.class);
-    HashMap<Integer, User> users = new HashMap<>();
+    HashMap<Long, User> users = new HashMap<>();
 
     @Override
     public Collection<User> getAll() {
         return users.values();
+    }
+
+    @Override
+    public User getById(Long id) {
+        return Optional.ofNullable(users.get(id))
+                .orElseThrow(() -> new NotFoundException("id = " + id + " user not found"));
     }
 
     @Override
@@ -104,7 +111,7 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User remove(User user) {
+    public void remove(User user) {
         if (user.getId() == null) {
             log.error("Id must not be empty");
             throw new ConditionsNotMetException("Id must not be empty");
@@ -119,10 +126,10 @@ public class InMemoryUserStorage implements UserStorage{
         throw new NotFoundException("User with id = " + user.getId() + " not found");
     }
 
-    public Integer getNewId() {
-        int currentMaxId = users.keySet()
+    public Long getNewId() {
+        long currentMaxId = users.keySet()
                 .stream()
-                .mapToInt(id -> id)
+                .mapToLong(id -> id)
                 .max()
                 .orElse(0);
         return ++currentMaxId;

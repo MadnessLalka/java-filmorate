@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DuplicateDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -14,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 
 @Service
@@ -30,48 +28,33 @@ public class FilmService implements FilmStorage {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
-    public void addLikeToFilm(Film film, User user) {
-        if (!inMemoryFilmStorage.getAll().contains(film)) {
-            log.warn("Film {} not found", film);
-            throw new NotFoundException("Film " + film.getName() + " not found");
-        }
+    public void addLikeToFilm(Long id, Long userId) {
+        Film film = inMemoryFilmStorage.getById(id);
+        User user = inMemoryUserStorage.getById(userId);
 
-        if (!inMemoryUserStorage.getAll().contains(user)) {
-            log.warn("User {} not found", user);
-            throw new NotFoundException("User " + user.getEmail() + " not found");
-        }
-
-        if (!film.getUserLikes().toString().contains(user.getId().toString())) {
+        if (film.getUserLikes().contains(user.getId())) {
             log.warn("User {} already liked this film {}", user.getEmail(), film.getName());
             throw new DuplicateDataException("User " + user.getEmail()
                     + " already liked this film " + film.getName());
         }
 
         log.info("User {} liked film {}", user.getEmail(), film.getName());
-        film.setUserLikes(Collections.singleton(user.getId()));
+        film.setUserLikes(user.getId());
     }
 
-    public void removeLikeFromFilm(Film film, User user) {
-        if (!inMemoryFilmStorage.getAll().contains(film)) {
-            log.warn("Film {} not found", film);
-            throw new NotFoundException("Film " + film.getName() + " not found");
-        }
+    public void removeLikeFromFilm(Long id, Long userId) {
+        Film film = inMemoryFilmStorage.getById(id);
+        User user = inMemoryUserStorage.getById(userId);
 
-        if (!inMemoryUserStorage.getAll().contains(user)) {
-            log.warn("User {} not found", user);
-            throw new NotFoundException("User " + user.getEmail() + " not found");
-        }
-
-        if (film.getUserLikes().toString().contains(user.getId().toString())) {
+        if (film.getUserLikes().contains(user.getId())) {
             log.info("Removed like to this user {} from film {}", user.getEmail(), film.getName());
             film.getUserLikes().remove(user.getId());
         }
 
         log.warn("User {} wasn't found to liked film {}", user.getEmail(), film.getName());
-        throw new NotFoundException("User " + user.getEmail() + " wasn't found to liked film " + film.getName());
     }
 
-    public Collection<Film> getTopPopularFilms(@Value("${filmorate.film.top.size}") int filmTopSize) {
+    public Collection<Film> getTopPopularFilms(Integer filmTopSize) {
         if (inMemoryFilmStorage.getAll().isEmpty()) {
             log.warn("Film list is empty");
             throw new NotFoundException("Film list is empty");
@@ -79,11 +62,16 @@ public class FilmService implements FilmStorage {
 
         log.trace("Getting list by top {} films by liked", filmTopSize);
         return inMemoryFilmStorage.getAll().stream()
-                .sorted(Comparator.comparing(film -> film.getUserLikes().size(), Comparator.reverseOrder()))
+                .filter(film -> film.getUserLikes() != null && !film.getUserLikes().isEmpty())
+                .sorted(Comparator.comparingLong((Film film) -> film.getUserLikes().size()).reversed())
                 .limit(filmTopSize)
                 .toList();
     }
 
+    @Override
+    public Film getById(Long id) {
+        return inMemoryFilmStorage.getById(id);
+    }
 
     @Override
     public Collection<Film> getAll() {
@@ -101,7 +89,7 @@ public class FilmService implements FilmStorage {
     }
 
     @Override
-    public Film remove(Film film) {
-        return inMemoryFilmStorage.remove(film);
+    public void remove(Film film) {
+        inMemoryFilmStorage.remove(film);
     }
 }

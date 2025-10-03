@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.controller.utils.Constants.MAX_LENGTH_FILM_DESCRIPTION;
 import static ru.yandex.practicum.filmorate.controller.utils.Constants.MIN_TIME_ADDING_FILM;
@@ -17,11 +18,17 @@ import static ru.yandex.practicum.filmorate.controller.utils.Constants.MIN_TIME_
 public class InMemoryFilmStorage implements FilmStorage {
     private static final Logger log = LoggerFactory.getLogger(InMemoryFilmStorage.class);
 
-    HashMap<Integer, Film> films = new HashMap<>();
+    HashMap<Long, Film> films = new HashMap<>();
 
     @Override
     public Collection<Film> getAll() {
         return films.values();
+    }
+
+    @Override
+    public Film getById(Long id) {
+        return Optional.ofNullable(films.get(id))
+                .orElseThrow(() -> new NotFoundException("id = " + id + " film not found"));
     }
 
     @Override
@@ -103,7 +110,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film remove(Film film) {
+    public void remove(Film film) {
         if (film.getId() == null) {
             log.error("Id must not be empty");
             throw new ConditionsNotMetException("Id must not be empty");
@@ -119,10 +126,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
 
-    public Integer getNewId() {
-        int currentMaxId = films.keySet()
+    public Long getNewId() {
+        long currentMaxId = films.keySet()
                 .stream()
-                .mapToInt(id -> id)
+                .mapToLong(id -> id)
                 .max()
                 .orElse(0);
         return ++currentMaxId;

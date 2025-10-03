@@ -4,13 +4,14 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.controller.utils.Constants.MAX_LENGTH_FILM_DESCRIPTION;
 
 @Data
 public class Film {
-    private Integer id;
+    private Long id;
 
     @NotNull
     @NotBlank
@@ -26,5 +27,9 @@ public class Film {
     @Positive(message = "Duration must be positive")
     private int duration;
 
-    private Set<Integer> userLikes;
+    private Set<Long> userLikes = new HashSet<>();
+
+    public void setUserLikes(Long userId) {
+        this.userLikes.add(userId);
+    }
 }
