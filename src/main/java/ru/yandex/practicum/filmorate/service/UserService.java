@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DuplicateDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
@@ -14,27 +13,26 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class UserService implements UserStorage {
+public class UserService {
 
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
     public Collection<User> getUserFriends(Long id) {
-        User user = inMemoryUserStorage.getById(id);
+        User user = userStorage.getById(id);
 
         log.trace("Getting list friends by {}", user);
 
         List<User> friendsUserList = user.getFriends().stream()
-                .map(this::getById)
+                .map(userStorage::getById)
                 .toList();
 
         if (friendsUserList.isEmpty()) {
             log.warn("User {} friends list is empty", user.getEmail());
-            throw new NotFoundException("User " + user.getEmail() + "  friends list is empty");
         }
 
         log.info("Friends list of user {} is {}", user.getEmail(), friendsUserList);
@@ -42,14 +40,14 @@ public class UserService implements UserStorage {
     }
 
     public Collection<User> getMutualFriends(Long id, Long otherId) {
-        User currentUser = inMemoryUserStorage.getById(id);
-        User comparableFriend = inMemoryUserStorage.getById(otherId);
+        User currentUser = userStorage.getById(id);
+        User comparableFriend = userStorage.getById(otherId);
 
         log.trace("Getting list mutual friends by {} & {}", currentUser.getEmail(), comparableFriend.getEmail());
 
         List<User> mutualFriendsList = currentUser.getFriends().stream()
                 .filter(idFriend -> comparableFriend.getFriends().contains(idFriend))
-                .map(inMemoryUserStorage::getById)
+                .map(userStorage::getById)
                 .toList();
 
         if (mutualFriendsList.isEmpty()) {
@@ -62,10 +60,9 @@ public class UserService implements UserStorage {
         return mutualFriendsList;
     }
 
-
     public void addToFriends(Long id, Long friendId) {
-        User user = inMemoryUserStorage.getById(id);
-        User newFriend = inMemoryUserStorage.getById(friendId);
+        User user = userStorage.getById(id);
+        User newFriend = userStorage.getById(friendId);
 
         if (user.getFriends().contains(newFriend.getId())) {
             log.warn("User {} already to friends to {}", newFriend.getEmail(), user.getEmail());
@@ -80,8 +77,8 @@ public class UserService implements UserStorage {
     }
 
     public void removeFromFriends(Long id, Long friendId) {
-        User user = inMemoryUserStorage.getById(id);
-        User newFriend = inMemoryUserStorage.getById(friendId);
+        User user = userStorage.getById(id);
+        User newFriend = userStorage.getById(friendId);
 
         if (user.getFriends().contains(newFriend.getId())) {
             log.info("User {} was removed from friends {}", newFriend.getEmail(), user.getEmail());
@@ -93,29 +90,23 @@ public class UserService implements UserStorage {
         }
     }
 
-    @Override
     public User getById(Long id) {
-        return inMemoryUserStorage.getById(id);
+        return userStorage.getById(id);
     }
 
-    @Override
     public Collection<User> getAll() {
-        return inMemoryUserStorage.getAll();
+        return userStorage.getAll();
     }
 
-    @Override
     public User create(User user) {
-        return inMemoryUserStorage.create(user);
+        return userStorage.create(user);
     }
 
-    @Override
     public User update(User newUser) {
-        return inMemoryUserStorage.update(newUser);
+        return userStorage.update(newUser);
     }
 
-    @Override
     public void remove(User user) {
-        inMemoryUserStorage.remove(user);
+        userStorage.remove(user);
     }
-
 }

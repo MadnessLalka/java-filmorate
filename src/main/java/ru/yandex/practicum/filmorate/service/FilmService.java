@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class FilmService implements FilmStorage {
+public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -78,27 +78,22 @@ public class FilmService implements FilmStorage {
 
     }
 
-    @Override
     public Film getById(Long id) {
         return filmStorage.getById(id);
     }
 
-    @Override
     public Collection<Film> getAll() {
         return filmStorage.getAll();
     }
 
-    @Override
     public Film create(Film film) {
         return filmStorage.create(film);
     }
 
-    @Override
     public Film update(Film newFilm) {
         return filmStorage.update(newFilm);
     }
 
-    @Override
     public void remove(Film film) {
         filmStorage.remove(film);
     }

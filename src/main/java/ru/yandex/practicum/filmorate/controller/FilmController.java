@@ -37,7 +37,8 @@ public class FilmController {
 
     @GetMapping("/popular")
     public ResponseEntity<Collection<Film>> getTopPopularFilms(
-            @RequestParam(defaultValue = "#{${filmorate.film.top.size:10}}") int count) {
+            @RequestParam(defaultValue = "#{${filmorate.film.top.size:10}}") int count
+    ) {
 
         Collection<Film> films = filmService.getTopPopularFilms(count);
 
@@ -49,9 +50,7 @@ public class FilmController {
 
         Film newFilm = filmService.create(film);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(newFilm);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newFilm);
     }
 
     @PutMapping
