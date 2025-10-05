@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
-    private Integer id;
+    private Long id;
 
     @NotNull
     @NotBlank
@@ -22,4 +24,10 @@ public class User {
 
     private String name;
     private LocalDate birthday;
+
+    private Set<Long> friends = new HashSet<>();
+
+    public void setFriends(Long idFriend) {
+        this.friends.add(idFriend);
+    }
 }

@@ -2,119 +2,87 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/users")
-public class UserController implements IdGenerator {
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+public class UserController {
+    private final UserService userService;
 
-    HashMap<Integer, User> users = new HashMap<>();
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    Collection<User> getAll() {
-        return users.values();
+    public ResponseEntity<Collection<User>> getAll() {
+        Collection<User> users = userService.getAll();
+
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<User> getById(@PathVariable Long id) {
+        User user = userService.getById(id);
+
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("{id}/friends")
+    public ResponseEntity<Collection<User>> getUsersFriends(@PathVariable Long id) {
+        Collection<User> users = userService.getUserFriends(id);
+
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public ResponseEntity<Collection<User>> getMutualFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        Collection<User> users = userService.getMutualFriends(id, otherId);
+
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public ResponseEntity<User> create(@Valid @RequestBody User user) {
+        User newUser = userService.create(user);
 
-        if ((user.getEmail() == null || user.getEmail().isBlank())) {
-            log.error("User email cannot be empty");
-            throw new ConditionsNotMetException("User email cannot be empty");
-        }
-
-        if (!user.getEmail().contains("@")) {
-            log.error("Email must be symbol @");
-            throw new ConditionsNotMetException("Email must be symbol @");
-        }
-
-        if ((user.getLogin() == null || user.getLogin().isBlank())) {
-            log.error("Login cannot be empty");
-            throw new ConditionsNotMetException("Login cannot be empty");
-        }
-
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.info("Name empty change to login {}", user.getLogin());
-            user.setName(user.getLogin());
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Birthday cannot be to future");
-            throw new ConditionsNotMetException("Birthday cannot be to future");
-        }
-
-        user.setId(getNewId());
-        users.put(user.getId(), user);
-
-        log.info("User create {}", user);
-        return user;
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(newUser);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
-        if (newUser.getId() == null) {
-            log.error("Id must not be empty");
-            throw new ConditionsNotMetException("Id must not be empty");
-        }
+    public ResponseEntity<User> update(@Valid @RequestBody User newUser) {
+        User updatedUser = userService.update(newUser);
 
-        if (users.containsKey(newUser.getId())) {
-            User oldUser = users.get(newUser.getId());
-
-            if ((newUser.getEmail() == null || newUser.getEmail().isBlank())) {
-                log.error("User email cannot be empty to update");
-                throw new ConditionsNotMetException("User email cannot be empty to update");
-            }
-
-            if (!newUser.getEmail().contains("@")) {
-                log.error("Email must be symbol @ to update");
-                throw new ConditionsNotMetException("Email must be symbol @");
-            }
-
-            if ((newUser.getLogin() == null || newUser.getLogin().isBlank())) {
-                log.error("Login cannot be empty to update");
-                throw new ConditionsNotMetException("Login cannot be empty to update");
-            }
-
-            if (newUser.getName() == null || newUser.getName().isBlank()) {
-                log.info("Name is empty change to login to update {}", newUser.getLogin());
-                newUser.setName(newUser.getLogin());
-            }
-
-            if (newUser.getBirthday().isAfter(LocalDate.now())) {
-                log.error("Birthday cannot be to future to update");
-                throw new ConditionsNotMetException("Birthday cannot be to future to update");
-            }
-
-            oldUser.setEmail(newUser.getEmail());
-            oldUser.setLogin(newUser.getLogin());
-            oldUser.setName(newUser.getName());
-            oldUser.setBirthday(newUser.getBirthday());
-
-            log.info("User update {}", oldUser);
-            return oldUser;
-
-        }
-        log.error("User with id = {} not found", newUser.getId());
-        throw new NotFoundException("User with id = " + newUser.getId() + " not found");
+        return ResponseEntity.ok(updatedUser);
     }
 
-    @Override
-    public Integer getNewId() {
-        int currentMaxId = users.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("{id}/friends/{friendId}")
+    public ResponseEntity<Void> addToFriends(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addToFriends(id, friendId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{id}/friends/{friendId}")
+    public ResponseEntity<Void> removeFromFriends(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.removeFromFriends(id, friendId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> remove(@Valid @RequestBody User user) {
+        userService.remove(user);
+
+        return ResponseEntity.ok().build();
     }
 }

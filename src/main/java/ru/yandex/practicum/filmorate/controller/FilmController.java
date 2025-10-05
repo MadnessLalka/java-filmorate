@@ -1,117 +1,83 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.HashMap;
-
-import static ru.yandex.practicum.filmorate.controller.utils.Constants.MAX_LENGTH_FILM_DESCRIPTION;
-import static ru.yandex.practicum.filmorate.controller.utils.Constants.MIN_TIME_ADDING_FILM;
 
 @RestController
 @RequestMapping("/films")
-public class FilmController implements IdGenerator {
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
+public class FilmController {
+    private final FilmService filmService;
 
-    HashMap<Integer, Film> films = new HashMap<>();
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
-    Collection<Film> getAll() {
-        return films.values();
+    public ResponseEntity<Collection<Film>> getAll() {
+
+        Collection<Film> films = filmService.getAll();
+        return ResponseEntity.ok(films);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Film> getById(@PathVariable Long id) {
+
+        Film film = filmService.getById(id);
+
+        return ResponseEntity.ok(film);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<Collection<Film>> getTopPopularFilms(
+            @RequestParam(defaultValue = "#{${filmorate.film.top.size:10}}") int count
+    ) {
+
+        Collection<Film> films = filmService.getTopPopularFilms(count);
+
+        return ResponseEntity.ok(films);
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            log.error("Film title cannot be empty");
-            throw new ConditionsNotMetException("Film title cannot be empty");
-        }
+    public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
 
-        if (film.getDescription().length() > MAX_LENGTH_FILM_DESCRIPTION) {
-            log.error("Max length of film description must no more " +
-                    MAX_LENGTH_FILM_DESCRIPTION + " symbols");
-            throw new ConditionsNotMetException("Max length of film description must no more " +
-                    MAX_LENGTH_FILM_DESCRIPTION + " symbols");
+        Film newFilm = filmService.create(film);
 
-        }
-
-        if (film.getReleaseDate().isBefore(MIN_TIME_ADDING_FILM)) {
-            log.error("Min realise date isn't before {}", MIN_TIME_ADDING_FILM);
-            throw new ConditionsNotMetException("Min realise date isn't before " +
-                    MIN_TIME_ADDING_FILM);
-        }
-
-        if (film.getDuration() <= 0) {
-            log.error("Duration must be positive");
-            throw new ConditionsNotMetException("Duration must be positive");
-        }
-
-        film.setId(getNewId());
-        films.put(film.getId(), film);
-
-        log.info("Film create {}", film);
-        return film;
+        return ResponseEntity.status(HttpStatus.CREATED).body(newFilm);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        if (newFilm.getId() == null) {
-            log.error("Id must not be empty");
-            throw new ConditionsNotMetException("Id must not be empty");
-        }
+    public ResponseEntity<Film> update(@Valid @RequestBody Film newFilm) {
+        Film updatedFilm = filmService.update(newFilm);
 
-        if (films.containsKey(newFilm.getId())) {
-            Film oldFilm = films.get(newFilm.getId());
-
-            if (newFilm.getName() == null || newFilm.getName().isBlank()) {
-                log.error("Film title cannot be empty to update");
-                throw new ConditionsNotMetException("Film title cannot be empty to update");
-            }
-
-            if (newFilm.getDescription().length() > MAX_LENGTH_FILM_DESCRIPTION) {
-                log.error("Max length of newFilm description must no more " +
-                        MAX_LENGTH_FILM_DESCRIPTION + "symbols");
-                throw new ConditionsNotMetException("Max length of newFilm description must no more " +
-                        MAX_LENGTH_FILM_DESCRIPTION + "symbols");
-            }
-
-            if (newFilm.getReleaseDate().isBefore(MIN_TIME_ADDING_FILM)) {
-                log.error("Min realise date isn't before {} to update", MIN_TIME_ADDING_FILM);
-                throw new ConditionsNotMetException("Min realise date isn't before " +
-                        MIN_TIME_ADDING_FILM + " to update");
-            }
-
-            if (newFilm.getDuration() <= 0) {
-                log.error("Duration must be positive to update");
-                throw new ConditionsNotMetException("Duration must be positive to update");
-            }
-
-            oldFilm.setName(newFilm.getName());
-            oldFilm.setDescription(newFilm.getDescription());
-            oldFilm.setReleaseDate(newFilm.getReleaseDate());
-            oldFilm.setDuration(newFilm.getDuration());
-
-            log.info("Film update {}", oldFilm);
-            return oldFilm;
-        }
-
-        log.error("Film with id = {} not found", newFilm.getId());
-        throw new NotFoundException("Film with id = " + newFilm.getId() + " not found");
+        return ResponseEntity.ok(updatedFilm);
     }
 
-    @Override
-    public Integer getNewId() {
-        int currentMaxId = films.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("{id}/like/{userId}")
+    public ResponseEntity<Void> addLikeToFilm(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLikeToFilm(id, userId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> remove(@Valid @RequestBody Film film) {
+        filmService.remove(film);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{id}/like/{userId}")
+    public ResponseEntity<Void> removeLikeFromFilm(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.removeLikeFromFilm(id, userId);
+
+        return ResponseEntity.ok().build();
     }
 }
