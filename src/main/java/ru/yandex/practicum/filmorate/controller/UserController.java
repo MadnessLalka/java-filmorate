@@ -53,8 +53,8 @@ public class UserController {
     public ResponseEntity<User> create(@Valid @RequestBody User user) {
         User newUser = userService.create(user);
 
-        return ResponseEntity.
-                status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(newUser);
     }
 
