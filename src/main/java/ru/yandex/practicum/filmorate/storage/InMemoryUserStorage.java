@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,8 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryUserStorage.class);
     HashMap<Long, User> users = new HashMap<>();
 
     @Override
@@ -25,7 +26,14 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User getById(Long id) {
         return Optional.ofNullable(users.get(id))
-                .orElseThrow(() -> new NotFoundException("id = " + id + " user not found"));
+                .map(user -> {
+                    log.info("id = {} was found user = {}", id, user.getName());
+                    return user;
+                })
+                .orElseThrow(() -> {
+                    log.warn("id = {} user not found", id);
+                    return new NotFoundException("id = " + id + " user not found");
+                });
     }
 
     @Override

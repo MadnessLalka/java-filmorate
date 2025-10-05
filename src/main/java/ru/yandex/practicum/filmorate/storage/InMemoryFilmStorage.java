@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -15,9 +14,8 @@ import static ru.yandex.practicum.filmorate.controller.utils.Constants.MAX_LENGT
 import static ru.yandex.practicum.filmorate.controller.utils.Constants.MIN_TIME_ADDING_FILM;
 
 @Component
+@Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryFilmStorage.class);
-
     HashMap<Long, Film> films = new HashMap<>();
 
     @Override
@@ -28,7 +26,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getById(Long id) {
         return Optional.ofNullable(films.get(id))
-                .orElseThrow(() -> new NotFoundException("id = " + id + " film not found"));
+                .map(film -> {
+                    log.info("id = {} was found film = {}", id, film.getName());
+                    return film;
+                })
+                .orElseThrow(() -> {
+                    log.warn("id = {} film not found", id);
+                    return new NotFoundException("id = " + id + " film not found");
+                });
     }
 
     @Override

@@ -1,19 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DuplicateDataException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
+@Slf4j
 public class UserService implements UserStorage {
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final InMemoryUserStorage inMemoryUserStorage;
 
@@ -27,9 +28,17 @@ public class UserService implements UserStorage {
 
         log.trace("Getting list friends by {}", user);
 
-        return user.getFriends().stream()
+        List<User> friendsUserList = user.getFriends().stream()
                 .map(this::getById)
                 .toList();
+
+        if (friendsUserList.isEmpty()) {
+            log.warn("User {} friends list is empty", user.getEmail());
+            throw new NotFoundException("User " + user.getEmail() + "  friends list is empty");
+        }
+
+        log.info("Friends list of user {} is {}", user.getEmail(), friendsUserList);
+        return friendsUserList;
     }
 
     public Collection<User> getMutualFriends(Long id, Long otherId) {
@@ -38,10 +47,19 @@ public class UserService implements UserStorage {
 
         log.trace("Getting list mutual friends by {} & {}", currentUser.getEmail(), comparableFriend.getEmail());
 
-        return currentUser.getFriends().stream()
+        List<User> mutualFriendsList = currentUser.getFriends().stream()
                 .filter(idFriend -> comparableFriend.getFriends().contains(idFriend))
                 .map(inMemoryUserStorage::getById)
                 .toList();
+
+        if (mutualFriendsList.isEmpty()) {
+            log.warn("User {} mutual friends list with user {} is empty", currentUser.getEmail(), comparableFriend.getEmail());
+            throw new NotFoundException("User " + currentUser.getEmail() +
+                    "  mutual friends list with user " + comparableFriend.getEmail() + " is empty");
+        }
+
+        log.info("Mutual friends list of user {} is {}", currentUser.getEmail(), mutualFriendsList);
+        return mutualFriendsList;
     }
 
 
@@ -50,9 +68,9 @@ public class UserService implements UserStorage {
         User newFriend = inMemoryUserStorage.getById(friendId);
 
         if (user.getFriends().contains(newFriend.getId())) {
-            log.warn("User {} already to friend to {}", newFriend.getEmail(), user.getEmail());
+            log.warn("User {} already to friends to {}", newFriend.getEmail(), user.getEmail());
             throw new DuplicateDataException("User + " + newFriend.getEmail()
-                    + " already to friend to " + user.getEmail());
+                    + " already to friends to " + user.getEmail());
         }
 
         log.info("User {} was added as a friend {}", newFriend, user);
@@ -66,13 +84,13 @@ public class UserService implements UserStorage {
         User newFriend = inMemoryUserStorage.getById(friendId);
 
         if (user.getFriends().contains(newFriend.getId())) {
-            log.info("User {} was removed from friend {}", newFriend.getEmail(), user.getEmail());
+            log.info("User {} was removed from friends {}", newFriend.getEmail(), user.getEmail());
 
             user.getFriends().remove(newFriend.getId());
             newFriend.getFriends().remove(user.getId());
+        } else {
+            log.warn("User {} wasn't found to friends {}", newFriend.getEmail(), user.getEmail());
         }
-
-        log.warn("User {} wasn't found to friends {}", newFriend.getEmail(), user.getEmail());
     }
 
     @Override

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -20,44 +21,64 @@ public class FilmController {
     }
 
     @GetMapping
-    Collection<Film> getAll() {
-        return filmService.getAll();
+    public ResponseEntity<Collection<Film>> getAll() {
+
+        Collection<Film> films = filmService.getAll();
+        return ResponseEntity.ok(films);
     }
 
     @GetMapping("{id}")
-    public Film getById(@PathVariable Long id) {
-        return filmService.getById(id);
+    public ResponseEntity<Film> getById(@PathVariable Long id) {
+
+        Film film = filmService.getById(id);
+
+        return ResponseEntity.ok(film);
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getTopPopularFilms(
+    public ResponseEntity<Collection<Film>> getTopPopularFilms(
             @RequestParam(defaultValue = "#{${filmorate.film.top.size:10}}") int count) {
-        return filmService.getTopPopularFilms(count);
+
+        Collection<Film> films = filmService.getTopPopularFilms(count);
+
+        return ResponseEntity.ok(films);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Film create(@Valid @RequestBody Film film) {
-        return filmService.create(film);
+    public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
+
+        Film newFilm = filmService.create(film);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(newFilm);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        return filmService.update(newFilm);
+    public ResponseEntity<Film> update(@Valid @RequestBody Film newFilm) {
+        Film updatedFilm = filmService.update(newFilm);
+
+        return ResponseEntity.ok(updatedFilm);
     }
 
     @PutMapping("{id}/like/{userId}")
-    public void addLikeToFilm(@PathVariable Long id, @PathVariable Long userId) {
+    public ResponseEntity<Void> addLikeToFilm(@PathVariable Long id, @PathVariable Long userId) {
         filmService.addLikeToFilm(id, userId);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public void remove(@Valid @RequestBody Film film) {
+    public ResponseEntity<Void> remove(@Valid @RequestBody Film film) {
         filmService.remove(film);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public void removeLikeFromFilm(@PathVariable Long id, @PathVariable Long userId) {
+    public ResponseEntity<Void> removeLikeFromFilm(@PathVariable Long id, @PathVariable Long userId) {
         filmService.removeLikeFromFilm(id, userId);
+
+        return ResponseEntity.ok().build();
     }
 }
