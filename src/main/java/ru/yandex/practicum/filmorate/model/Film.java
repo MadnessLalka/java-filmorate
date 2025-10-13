@@ -34,4 +34,8 @@ public class Film {
     public void setUserLikes(Long userId) {
         this.userLikes.add(userId);
     }
+
+    public void setGenres(Genre genre){
+        this.genres.add(genre);
+    }
 }
