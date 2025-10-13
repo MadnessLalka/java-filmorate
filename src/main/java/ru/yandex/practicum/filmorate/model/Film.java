@@ -28,6 +28,8 @@ public class Film {
     private int duration;
 
     private Set<Long> userLikes = new HashSet<>();
+    private Set<Genre> genres = new HashSet<>();
+    private MotionPictureAssociation motionPictureAssociation;
 
     public void setUserLikes(Long userId) {
         this.userLikes.add(userId);
