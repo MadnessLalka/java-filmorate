@@ -27,7 +27,7 @@ public class UserService {
 
         log.trace("Getting list friends by {}", user);
 
-        List<User> friendsUserList = user.getFriends().stream()
+        List<User> friendsUserList = user.getFriends().keySet().stream()
                 .map(userStorage::getById)
                 .toList();
 
@@ -45,8 +45,8 @@ public class UserService {
 
         log.trace("Getting list mutual friends by {} & {}", currentUser.getEmail(), comparableFriend.getEmail());
 
-        List<User> mutualFriendsList = currentUser.getFriends().stream()
-                .filter(idFriend -> comparableFriend.getFriends().contains(idFriend))
+        List<User> mutualFriendsList = currentUser.getFriends().keySet().stream()
+                .filter(idFriend -> comparableFriend.getFriends().containsKey(idFriend))
                 .map(userStorage::getById)
                 .toList();
 
@@ -64,7 +64,7 @@ public class UserService {
         User user = userStorage.getById(id);
         User newFriend = userStorage.getById(friendId);
 
-        if (user.getFriends().contains(newFriend.getId())) {
+        if (user.getFriends().containsKey(newFriend.getId())) {
             log.warn("User {} already to friends to {}", newFriend.getEmail(), user.getEmail());
             throw new DuplicateDataException("User + " + newFriend.getEmail()
                     + " already to friends to " + user.getEmail());
@@ -80,7 +80,7 @@ public class UserService {
         User user = userStorage.getById(id);
         User newFriend = userStorage.getById(friendId);
 
-        if (user.getFriends().contains(newFriend.getId())) {
+        if (user.getFriends().containsKey(newFriend.getId())) {
             log.info("User {} was removed from friends {}", newFriend.getEmail(), user.getEmail());
 
             user.getFriends().remove(newFriend.getId());

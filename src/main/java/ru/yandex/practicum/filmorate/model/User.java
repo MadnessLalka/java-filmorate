@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class User {
@@ -25,10 +25,9 @@ public class User {
     private String name;
     private LocalDate birthday;
 
-    private Set<Long> friends = new HashSet<>();
-    private Friendship friendship;
+    private Map<Long, Friendship> friends = new HashMap<>();
 
     public void setFriends(Long idFriend) {
-        this.friends.add(idFriend);
+        this.friends.put(idFriend, Friendship.UNCONFIRMED);
     }
 }
