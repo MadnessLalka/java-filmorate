@@ -16,5 +16,3 @@ Template repository for Filmorate project.
 # Связи между таблицами
 Кроме основных таблиц, таких как User, FrienshipType, Film, Genres и MPA<br>
 Есть буферные таблицы для реализации связи многие ко многим - Friendships, LikedFilms, FilmGenres<br>
-
-# Основные запросы
