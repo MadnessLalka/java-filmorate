@@ -1,7 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-![ER-Диаграмма для построение базы данных](https://github.com/MadnessLalka/java-filmorate/blob/dev-database/ER-diagram.png)
+![ER-Диаграмма для построение базы данных](https://github.com/MadnessLalka/java-filmorate/blob/dev-database/ER-diagram.png) 
 
 #Таблицы базы данных
 1) User
@@ -13,7 +13,7 @@ Template repository for Filmorate project.
 7) Genres
 8) MPA
 
-#Связи между таблицами
+#Связи между таблицами<br>
 Кроме основных таблиц, таких как User, FrienshipType, Film, Genres и MPA<br>
 Есть буферные таблицы для реализации связи многие ко многим - Friendships, LikedFilms, FilmGenres<br>
 
